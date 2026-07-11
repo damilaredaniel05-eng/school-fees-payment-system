@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - University Fees Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-logo {
+            padding: 0 20px 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-logo h2 {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-logo p {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin: 0;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 15px 20px;
+            color: white;
+            text-decoration: none;
+            transition: background 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background: rgba(255, 255, 255, 0.1);
+            border-left-color: white;
+        }
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            margin-left: 250px;
+        }
+
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            color: #333;
+        }
+
+        .logout-btn {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #764ba2;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card h3 {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .stat-card .value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th {
+            background: #f5f5f5;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #ddd;
+        }
+
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        table tr:hover {
+            background: #f9f9f9;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #764ba2;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .main {
+                margin-left: 200px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 14px;
+            }
+
+            table th, table td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-logo">
+                <h2>Admin Panel</h2>
+                <p>Fees Management</p>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#overview" class="menu-link active" data-section="overview">📊 Overview</a></li>
+                <li><a href="#students" class="menu-link" data-section="students">👥 Students</a></li>
+                <li><a href="#fees" class="menu-link" data-section="fees">💰 Fees</a></li>
+                <li><a href="#payments" class="menu-link" data-section="payments">✓ Payments</a></li>
+                <li><a href="#reports" class="menu-link" data-section="reports">📈 Reports</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main">
+            <div class="header">
+                <h1 id="pageTitle">Dashboard Overview</h1>
+                <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+            </div>
+
+            <div class="content">
+                <div class="alert" id="alert"></div>
+
+                <!-- Overview Section -->
+                <div id="overview" class="section-content">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3>Total Students</h3>
+                            <div class="value" id="totalStudents">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Total Fees Assigned</h3>
+                            <div class="value" id="totalFees">₦0</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Total Paid</h3>
+                            <div class="value" id="totalPaid">₦0</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Outstanding</h3>
+                            <div class="value" id="outstandingFees">₦0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Students Section -->
+                <div id="students" class="section-content" style="display: none;">
+                    <div class="section">
+                        <h2>Manage Students</h2>
+                        <div class="loading" id="studentsLoading">Loading students...</div>
+                        <table id="studentsTable" style="display: none;">
+                            <thead>
+                                <tr>
+                                    <th>Student ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Department</th>
+                                    <th>Class</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentsBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Fees Section -->
+                <div id="fees" class="section-content" style="display: none;">
+                    <div class="section">
+                        <h2>Manage Fees</h2>
+                        <div class="loading" id="feesLoading">Loading fees...</div>
+                        <table id="feesTable" style="display: none;">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Amount</th>
+                                    <th>Due Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="feesBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Payments Section -->
+                <div id="payments" class="section-content" style="display: none;">
+                    <div class="section">
+                        <h2>Payment History</h2>
+                        <div class="loading" id="paymentsLoading">Loading payments...</div>
+                        <table id="paymentsTable" style="display: none;">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Amount</th>
+                                    <th>Date</th>
+                                    <th>Reference</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="paymentsBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Reports Section -->
+                <div id="reports" class="section-content" style="display: none;">
+                    <div class="section">
+                        <h2>Reports & Analytics</h2>
+                        <div class="loading" id="reportsLoading">Loading reports...</div>
+                        <div id="reportsContent"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('adminToken');
+
+        // Check if user is logged in
+        if (!token) {
+            window.location.href = '/admin-login.html';
+        }
+
+        // Menu navigation
+        document.querySelectorAll('.menu-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Update active menu
+                document.querySelectorAll('.menu-link').forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+
+                // Update page title
+                const titles = {
+                    overview: 'Dashboard Overview',
+                    students: 'Manage Students',
+                    fees: 'Manage Fees',
+                    payments: 'Payment History',
+                    reports: 'Reports & Analytics'
+                };
+                document.getElementById('pageTitle').textContent = titles[link.dataset.section] || 'Dashboard';
+
+                // Show section
+                document.querySelectorAll('.section-content').forEach(section => section.style.display = 'none');
+                const section = document.getElementById(link.dataset.section);
+                if (section) section.style.display = 'block';
+
+                // Load data
+                loadSectionData(link.dataset.section);
+            });
+        });
+
+        // Load overview on page load
+        loadSectionData('overview');
+
+        async function loadSectionData(section) {
+            try {
+                if (section === 'overview') {
+                    await loadOverview();
+                } else if (section === 'students') {
+                    await loadStudents();
+                } else if (section === 'fees') {
+                    await loadFees();
+                } else if (section === 'payments') {
+                    await loadPayments();
+                } else if (section === 'reports') {
+                    await loadReports();
+                }
+            } catch (error) {
+                console.error('Error loading section:', error);
+                showAlert('Error loading data', 'error');
+            }
+        }
+
+        async function loadOverview() {
+            try {
+                const response = await fetch('/api/admin/overview', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('totalStudents').textContent = data.totalStudents;
+                    document.getElementById('totalFees').textContent = '₦' + formatNumber(data.totalFeesAssigned);
+                    document.getElementById('totalPaid').textContent = '₦' + formatNumber(data.totalPaid);
+                    document.getElementById('outstandingFees').textContent = '₦' + formatNumber(data.outstandingFees);
+                }
+            } catch (error) {
+                console.error('Error loading overview:', error);
+            }
+        }
+
+        async function loadStudents() {
+            const loading = document.getElementById('studentsLoading');
+            const table = document.getElementById('studentsTable');
+            const body = document.getElementById('studentsBody');
+
+            try {
+                const response = await fetch('/api/admin/students', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const students = await response.json();
+                    body.innerHTML = students.map(s => `
+                        <tr>
+                            <td>${s.student_id}</td>
+                            <td>${s.first_name} ${s.last_name}</td>
+                            <td>${s.email}</td>
+                            <td>${s.department}</td>
+                            <td>${s.class}</td>
+                        </tr>
+                    `).join('');
+                    loading.style.display = 'none';
+                    table.style.display = 'table';
+                }
+            } catch (error) {
+                console.error('Error loading students:', error);
+                loading.textContent = 'Error loading students';
+            }
+        }
+
+        async function loadFees() {
+            const loading = document.getElementById('feesLoading');
+            const table = document.getElementById('feesTable');
+            const body = document.getElementById('feesBody');
+
+            try {
+                const response = await fetch('/api/admin/fees', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const fees = await response.json();
+                    body.innerHTML = fees.map(f => `
+                        <tr>
+                            <td>${f.student_name}</td>
+                            <td>₦${formatNumber(f.amount)}</td>
+                            <td>${new Date(f.due_date).toLocaleDateString()}</td>
+                            <td><span class="badge ${f.status}">${f.status}</span></td>
+                            <td>
+                                <button class="btn btn-danger" onclick="deleteFee(${f.id})">Delete</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                    loading.style.display = 'none';
+                    table.style.display = 'table';
+                }
+            } catch (error) {
+                console.error('Error loading fees:', error);
+                loading.textContent = 'Error loading fees';
+            }
+        }
+
+        async function loadPayments() {
+            const loading = document.getElementById('paymentsLoading');
+            const table = document.getElementById('paymentsTable');
+            const body = document.getElementById('paymentsBody');
+
+            try {
+                const response = await fetch('/api/admin/payments', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const payments = await response.json();
+                    body.innerHTML = payments.map(p => `
+                        <tr>
+                            <td>${p.student_name}</td>
+                            <td>₦${formatNumber(p.amount)}</td>
+                            <td>${new Date(p.created_at).toLocaleDateString()}</td>
+                            <td>${p.receipt_number || 'N/A'}</td>
+                            <td><span class="badge success">Completed</span></td>
+                        </tr>
+                    `).join('');
+                    loading.style.display = 'none';
+                    table.style.display = 'table';
+                }
+            } catch (error) {
+                console.error('Error loading payments:', error);
+                loading.textContent = 'Error loading payments';
+            }
+        }
+
+        async function loadReports() {
+            const loading = document.getElementById('reportsLoading');
+            const content = document.getElementById('reportsContent');
+
+            try {
+                const response = await fetch('/api/admin/reports', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const reports = await response.json();
+                    content.innerHTML = `
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <h3>Collection Rate</h3>
+                                <div class="value">${reports.collectionRate}</div>
+                            </div>
+                            <div class="stat-card">
+                                <h3>Average Per Student</h3>
+                                <div class="value">₦${formatNumber(reports.averagePerStudent)}</div>
+                            </div>
+                            <div class="stat-card">
+                                <h3>Defaulting Students</h3>
+                                <div class="value">${reports.defaultingStudents}</div>
+                            </div>
+                        </div>
+                    `;
+                    loading.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error loading reports:', error);
+                loading.textContent = 'Error loading reports';
+            }
+        }
+
+        function formatNumber(num) {
+            return new Intl.NumberFormat('en-NG').format(num || 0);
+        }
+
+        async function deleteFee(id) {
+            if (!confirm('Are you sure you want to delete this fee?')) return;
+
+            try {
+                const response = await fetch(`/api/admin/fees/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    showAlert('Fee deleted successfully', 'success');
+                    loadSectionData('fees');
+                } else {
+                    showAlert('Error deleting fee', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Error deleting fee', 'error');
+            }
+        }
+
+        function showAlert(message, type) {
+            const alert = document.getElementById('alert');
+            alert.textContent = message;
+            alert.className = `alert show alert-${type}`;
+            setTimeout(() => alert.classList.remove('show'), 3000);
+        }
+
+        function logout() {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('adminId');
+            window.location.href = '/admin-login.html';
+        }
+    </script>
+</body>
+</html>
